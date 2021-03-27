@@ -16,16 +16,17 @@
 
         <!-- Add your site or application content here -->
         <h1>Stop scammers from manipluating users with Dev tools</h1>
-        <p>Hello world! This is HTML5 Boilerplate.</p>
+        <p></p>
         <div id="not-protect-amount">
-          <span>$100,000</li>
+          <span>$100,000 (not protected. You can edit this with JS or dev tools)</li>
         </div>
+        <br/>
         <div id="amount">
-          <span>$40,000</li>
+          <span>$40,000 (protected, you cant change this)</li>
         </div>
 
         <div id="lol">
-          <span>$30,000</li>
+          <span>$30,000 (protected, you cant change this)</li>
         </div>
 
         <script>
@@ -60,7 +61,7 @@
                   stashedClone: this.stashedClone,
                   originalParent: this.originalParent,
                 })
-              }.bind(this), 5000)
+              }.bind(this), this.opts.timeout || 500)
               
               /* Detach listener */
               return () => {
