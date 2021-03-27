@@ -1,0 +1,163 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="./observe-dom.js"></script>
+        <script src="./detect-dev-tools.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+        <h1>Stop scammers from manipluating users with Dev tools</h1>
+        <p>Hello world! This is HTML5 Boilerplate.</p>
+        <div id="not-protect-amount">
+          <span>$100,000</li>
+        </div>
+        <div id="amount">
+          <span>$40,000</li>
+        </div>
+
+        <div id="lol">
+          <span>$30,000</li>
+        </div>
+
+        <script>
+          class DomGuard {
+            constructor(opts = {}) {
+              const originalElement = document.querySelector(opts.selector)
+              if (!originalElement) {
+                throw new Error('Selector not found')
+              }
+              this.opts = opts
+              this.selector = opts.selector
+              this.originalElement = originalElement
+              this.initialText = originalElement.innerText
+              this.originalParent = originalElement.parentNode
+              this.stashedClone = originalElement.cloneNode(true)
+              this.detachListener = () => {}
+            }
+            init() {
+              /* Detect changes to any selector instantly */
+              const detachListener = domGuard({
+                selector: this.selector,
+                initialText: this.initialText,
+                originalParent: this.originalParent,
+                stashedClone: this.stashedClone,
+              })
+
+              /* Heartbeat to listen for changes via dev tools */              
+              const heartbeat = setInterval(function () {
+                restoreDom({
+                  selector: this.selector,
+                  initialText: this.initialText,
+                  stashedClone: this.stashedClone,
+                  originalParent: this.originalParent,
+                })
+              }.bind(this), 5000)
+              
+              /* Detach listener */
+              return () => {
+                clearInterval(heartbeat)
+                detachListener()
+              }
+            }
+          }
+
+          function printWarning() {
+            setTimeout(() => {
+              console.log('WARNING DO NOT PASTE ANY CODE HERE')
+            }, 0)
+          }
+
+          // Check if dev tools are open
+          if (window.devtools.isOpen) {
+            printWarning()
+          }
+
+          // If dev tools are opened print warning
+          window.addEventListener('devtoolschange', (event) => {
+            printWarning()
+          })
+
+          function domGuard(apiOpts) {
+            const { selector, initialText, originalParent, stashedClone, debug } = apiOpts
+            /* attach observer to parent element */
+            let detachListener = observeDOM(originalParent, function(m) { 
+              var addedNodes = [], removedNodes = [];
+              m.forEach(record => record.addedNodes.length & addedNodes.push(...record.addedNodes))
+              m.forEach(record => record.removedNodes.length & removedNodes.push(...record.removedNodes))
+              
+              if (debug) {
+                console.log('Added:', addedNodes)
+                console.log('Removed:', removedNodes)
+              }
+              if (addedNodes.length || removedNodes.length) {
+                console.log('Immediately Restore DOM nodes')
+                /* Disable listener to avoid infinite loop */
+                detachListener()
+
+                /* Immediately restore DOM */
+                restoreDom({
+                  selector, 
+                  initialText,
+                  stashedClone,
+                  originalParent: originalParent,
+                })
+
+                /* Reattach observeDOM Javascript listener */
+                detachListener = domGuard(apiOpts)
+              }
+            })
+            return detachListener
+          }
+
+          function restoreDom({ selector, initialText, originalParent, stashedClone }) {
+            console.log(`───────${selector}───────────`)
+            currentElement = document.querySelector(selector)
+            console.log('currentElement', currentElement)
+            console.log('stashedClone', stashedClone)
+            console.log('originalParent', originalParent)
+            if (!currentElement) return
+
+            // const originalText = originalElement.innerText
+            const currentElementText = currentElement.innerText
+            const stashedCloneText = stashedClone.innerText.trim()
+            console.log(`Value should be:   "${initialText}"`)
+            console.log(`currentText        "${currentElementText}`)
+            console.log(`persistedText      "${stashedCloneText}"`)
+            // console.log(`originalText       "${originalText}"`)
+
+            if (currentElementText !== initialText) {
+
+              if (stashedCloneText === initialText) {
+                console.log('VALUE has changed! Protect the DOM!')
+                const dirtyNode = stashedClone.cloneNode(true)
+                /* Replace altered DOM with cloned original */
+                originalParent.replaceChild(dirtyNode, currentElement)
+                /* Perist new clone if DOM changes again */
+              }
+            }
+          }
+
+          const guard = new DomGuard({
+            selector: '#amount span'
+          })
+
+          guard.init()
+
+          const guardTwo = new DomGuard({
+            selector: '#lol span'
+          })
+
+          guardTwo.init();
+
+        </script>
+    </body>
+</html>

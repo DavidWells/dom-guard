@@ -1,0 +1,15 @@
+{
+  "name": "dom-guard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "serve ."
+  },
+  "keywords": [],
+  "author": "DavidWells",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^11.3.2"
+  }
+}
