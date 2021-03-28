@@ -9,7 +9,7 @@
     <script type="application/javascript" src="./dist/dom-guard.umd.js"></script>
     <style>
       body {
-        margin: 32px 48px;
+        margin: 28px 48px;
         margin-bottom: 10px;
         font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
         line-height: 1.75rem;
@@ -28,6 +28,16 @@
         color: green;
         font-weight: bold;
         font-size: 20px;
+      }
+      .pointer {
+        font-size: 36px;
+        display: inline-block;
+        position: relative;
+      }
+      .pointer span {
+        position: relative;
+        top: 7px;
+        left: 10px;
       }
       .github-corner svg {
         height: 80px;
@@ -101,11 +111,16 @@
             Try to edit the green dollar amount below with Javascript or via chrome dev tools. 
             The values are automatically reset if altered.
           </p>
-          <span id="protected">$40,000 (protected, you cant change this)</li>
+          <span id="protected">$40,000 (protected, you cant change this)</span><span class='pointer'><span>👈</span></span>
         </div>
 
+        <p>Try to mutate the protected selected in the JS console</p>
+        <pre>document.querySelector('#protected').innerText = 'ah ah ah didnt say the magic word'</pre>
+
+        <p>No soup for you!</p>
+
         <div id="large-div">
-          <p>This is an example of using a larger protected div. Try to edit the below values</p>
+          <p>Here is a larger protected div. They are also guarded</p>
           <div>$130,000 (protected, you cant change this)</div>
           <div>$140,000 (protected, you cant change this)
 
@@ -115,7 +130,6 @@
 
         <p>Cool huh?</p>
 
-        <p>Please spread the word about these types of social engineering attacks.</p>
       </div>
 
       <div class='content-right'>
