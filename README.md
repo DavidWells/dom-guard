@@ -4,7 +4,7 @@ Stop scammers from the manipluating DOM.
 
 ## About
 
-Scammers are using dev tools to manipulate values in pages to trick unsuspecting victims into sending them money. These victims are typically the elderly.
+Scammers are using dev tools to manipulate values in pages to trick unsuspecting victims into sending them money. These victims are typically the elderly. 😢
 
 They connect to their victim's machines via remote desktop software under the guise of tech support or some other well known company.
 
@@ -12,7 +12,15 @@ The scammer then attempts to convince the victim they have received a larger tha
 
 See this video for [how the refund scams work](https://www.youtube.com/watch?v=J4mkZU2Y0as).
 
-DOMGuard is a small javascript snippet & proof of concept to help put an end to these criminals.
+DOMGuard is a small javascript library (~130 lines of code) & proof of concept to help put an end to these criminals.
+
+## How does this work?
+
+Any changes attempted via Javascript are detected by MutationObserver.
+
+Additionally, guarded DOM nodes are checked via a "hearbeat" every `500ms` to ensure the values are what they should be.
+
+View the <a href="https://github.com/DavidWells/dom-guard/blob/master/index.js">source code</a>.
 
 ## Install
 

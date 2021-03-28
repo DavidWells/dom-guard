@@ -20,9 +20,14 @@
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish"
   },
-  "keywords": [],
+  "homepage": "https://github.com/DavidWells/dom-guard#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidWells/dom-guard"
+  },
+  "keywords": ["dom", "security"],
   "author": "DavidWells",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "microbundle": "^0.13.0",
     "serve": "^11.3.2"

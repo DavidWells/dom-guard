@@ -12,7 +12,7 @@
         margin: 32px 48px;
         margin-bottom: 10px;
         font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-            line-height: 1.75rem;
+        line-height: 1.75rem;
       }
       .content {
         display: flex;
@@ -124,7 +124,7 @@
         <p><strong>Please share this with people you think might be vulnerable to such a scam ❤️</strong></p>
         <h2>How does this work?</h2>
         <p>Any changes attempted via Javascript are detected by MutationObserver.</p>
-        <p>Guarded DOM nodes are checked via a "hearbeat" that checks the values are what they should be.</p>
+        <p>Additionally, guarded DOM nodes are checked via a "hearbeat" every `500ms` to ensure the values are what they should be.</p>
         <p>View the <a href="https://github.com/DavidWells/dom-guard/blob/master/index.js">source code</a>.</p>
       </div>
 
