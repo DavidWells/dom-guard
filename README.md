@@ -37,6 +37,14 @@ guard.init()
 guard.disable()
 ```
 
+## Running the demo
+
+```bash
+npm install
+npm run build
+npm run serve
+```
+
 ## Caveats
 
 Please note, there isn't a foolproof solution for stopping social engineering attacks against your users.

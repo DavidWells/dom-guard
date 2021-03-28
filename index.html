@@ -11,20 +11,23 @@
       body {
         margin: 32px 48px;
         margin-bottom: 10px;
+        font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+            line-height: 1.75rem;
       }
       .content {
         display: flex;
       }
       .content-left {
         margin-right: 60px;
-        min-width: 600px;
+        min-width: 740px;
       }
       .content-left p {
-        max-width: 560px;
+        max-width: 660px;
       }
       #protected, #large-div div {
         color: green;
         font-weight: bold;
+        font-size: 20px;
       }
       .github-corner svg {
         height: 80px;
@@ -45,6 +48,16 @@
         40%,80% { transform: rotate(10deg) }
       }
       @media (max-width: 720px) {
+        .content, .content-left, iframe {
+          flex-direction: column;
+          max-width: 100%;
+          min-width: 100%;
+        }
+        
+        h1 { font-size: 24px; }
+        #protected, #large-div div {
+          font-size: 18px;
+        }
         .github-corner svg {
           height: 60px;
           width: 60px;
@@ -66,7 +79,7 @@
       <div class='content-left'>
         <div class='about'>
           <p>
-            Scammers are using dev tools to manipulate values in pages to trick unsuspecting victims into sending them money. These victims are typically the elderly.
+            Scammers are using dev tools to manipulate values in pages to trick unsuspecting victims into sending them money. These victims are typically the elderly. 😢
           </p>
           <p>
             They connect to their victim's machines via remote desktop software under the guise of tech support or some other well known company.
@@ -76,7 +89,7 @@
           </p>
 
           <p>
-            DOMGuard is a small javascript snippet & proof of concept to help put an end to these criminals.
+            DOMGuard is a small javascript library (~130 lines of code) & proof of concept to help put an end to these criminals.
           </p>
 
         </div>
@@ -100,47 +113,38 @@
           <div>$150,000 (protected, you cant change this)</div>
         </div>
 
-        <h2>How does this work?</h2>
-        <p>Any changes attempted via Javascript are detected by MutationObserver.</p>
-        <p>Guarded DOM nodes are checked via a "hearbeat" that checks the values are what they should be.</p>
-        <pre>
-const guard = new DOMGuard({
-  selector: '#protected',
-  heartbeat: 1000 // Check for manipulation every 1 second
-})
-// Initialize DOMGuard on the #protected selector
-guard.init()
-        </pre>
-        <p>View the source code of this page for the entire script.</p>
+        <p>Cool huh?</p>
+
+        <p>Please spread the word about these types of social engineering attacks.</p>
       </div>
 
       <div class='content-right'>
         <p>Here is a quick video on how the scammers operate.</p>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/J4mkZU2Y0as" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         <p><strong>Please share this with people you think might be vulnerable to such a scam ❤️</strong></p>
+        <h2>How does this work?</h2>
+        <p>Any changes attempted via Javascript are detected by MutationObserver.</p>
+        <p>Guarded DOM nodes are checked via a "hearbeat" that checks the values are what they should be.</p>
+        <p>View the <a href="https://github.com/DavidWells/dom-guard/blob/master/index.js">source code</a>.</p>
       </div>
 
     </div>
 
     <script>
-      /***********************
-       * Usage examples
-       *********************/ 
+      /* Usage examples */ 
       const guard = new DOMGuard({
         selector: '#protected',
-        // Check for manipulation every .5 second
-        heartbeat: 500
+        heartbeat: 500 // Check for manipulation every .5 second
       })
-      // Initialize dom guard on this node
+      // Initialize
       guard.init()
 
       const guardThree = new DOMGuard({
         selector: '#large-div',
         heartbeat: 1000
       })
-      // Initialize dom guard on this node
+      // Initialize
       guardThree.init();
-
     </script>
   </body>
 </html>

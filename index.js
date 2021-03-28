@@ -1,6 +1,13 @@
- 
+ // inServer for SSR support
+ const inServer = typeof window === 'undefined'
+
  class DOMGuard {
   constructor(opts = {}) {
+    this.detachListener = () => {}
+    if (inServer) {
+      return
+    }
+
     const originalElement = document.querySelector(opts.selector)
     if (!originalElement) {
       throw new Error(`Selector "${opts.selector}" not found`)
@@ -10,15 +17,14 @@
     this.initialText = normalizeText(originalElement.innerText)
     this.originalParent = originalElement.parentNode
     this.stashedClone = originalElement.cloneNode(true)
-    this.detachListener = () => {}
   }
   init() {
     /* Detect changes to any selector instantly */
     const detachListener = domGuard({
       selector: this.selector,
       initialText: this.initialText,
-      originalParent: this.originalParent,
       stashedClone: this.stashedClone,
+      originalParent: this.originalParent,
     })
     /* Heartbeat to listen for changes via dev tools */              
     const heartbeat = setInterval(function () {
@@ -74,6 +80,7 @@ function normalizeText(str) {
 }
 
 function restoreDom({ selector, initialText, originalParent, stashedClone, debug }) {
+  if (inServer) return
   currentElement = document.querySelector(selector)
   if (!currentElement) return
 
@@ -105,8 +112,8 @@ function restoreDom({ selector, initialText, originalParent, stashedClone, debug
 }
 
 function observeDOM(element, callback) {
+  if (inServer) return
   if (!element || element.nodeType !== 1) return
-  if (typeof window === 'undefined') return
 
   var MutationObserver = window.MutationObserver || window.WebKitMutationObserver
   if (MutationObserver) {
