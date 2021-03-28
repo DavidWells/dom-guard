@@ -4,23 +4,27 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>DOM Guard</title>
-    <meta name="description" content="">
+    <meta name="description" content="DOMGuard - Stop scammers from the manipulating DOM">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="application/javascript" src="./dist/domguard.umd.js"></script>
+
     <style>
       body {
         margin: 32px 48px;
-      }
-      .about {
-        max-width: 560px;
+        margin-bottom: 10px;
       }
       .content {
         display: flex;
       }
       .content-left {
         margin-right: 60px;
-        min-width: 560px;
+        min-width: 600px;
       }
-      span {
+      .content-left p {
+        max-width: 560px;
+      }
+      #protected, #large-div div {
+        color: green;
         font-weight: bold;
       }
       .github-corner svg {
@@ -37,29 +41,19 @@
         animation: octocat-wave .56s ease-in-out
       }
       @keyframes octocat-wave {
-        0%,to {
-          transform: rotate(0)
-        }
-        20%,60% {
-          transform: rotate(-25deg)
-        }
-        40%,80% {
-          transform: rotate(10deg)
-        }
+        0%,to { transform: rotate(0) }
+        20%,60% { transform: rotate(-25deg) }
+        40%,80% { transform: rotate(10deg) }
       }
       @media (max-width: 720px) {
         .github-corner svg {
-          height:60px;
-          width: 60px
+          height: 60px;
+          width: 60px;
         }
       }
       @media (max-width: 500px) {
-        .github-corner:hover .ForkMe_octo-arm__16cA1 {
-          animation:none
-        }
-        .github-corner .ForkMe_octo-arm__16cA1 {
-          animation: octocat-wave .56s ease-in-out
-        }
+        .github-corner:hover .octo-arm { animation:none }
+        .github-corner .octo-arm { animation: octocat-wave .56s ease-in-out }
       }
     </style>
   </head>
@@ -79,28 +73,26 @@
             They connect to their victim's machines via remote desktop software under the guise of tech support or some other well known company.
           </p>
           <p>
-            These scammers then attempt to convince the victim they have received a larger than expected "refund" by manipulating the victim's bank user interface via chrome dev tools.
+            The scammer then attempts to convince the victim they have received a larger than expected "refund" by manipulating the victim's bank user interface via chrome dev tools with the goal of getting the victim to mail them cash.
           </p>
 
-          <p>These scammers are real pieces of shit and need to be stopped... DOMGuard is a small javascript snippet & proof of concept to help put an end to these criminals</p>
+          <p>
+            DOMGuard is a small javascript snippet & proof of concept to help put an end to these criminals.
+          </p>
 
         </div>
 
         <h2>See it in action</h2>
     
         <div>
-          <h3>Protected Values Demo</h3>
-          <p>Try to edit the bold dollar amount below with JS or via chrome dev tools.</p>
+          <p>
+            Try to edit the green dollar amount below with Javascript or via chrome dev tools. 
+            The values are automatically reset if altered.
+          </p>
           <span id="protected">$40,000 (protected, you cant change this)</li>
         </div>
 
-        <div>
-          <p>These values are automatically reset if altered.</p>
-          <span id="protected-two">$30,000 (protected, you cant change this)</li>
-        </div>
-
-        <div id="multi">
-          <h3>Multiple rows</h3>
+        <div id="large-div">
           <p>This is an example of using a larger protected div. Try to edit the below values</p>
           <div>$130,000 (protected, you cant change this)</div>
           <div>$140,000 (protected, you cant change this)
@@ -108,173 +100,43 @@
           </div>
           <div>$150,000 (protected, you cant change this)</div>
         </div>
+
+        <h2>How does this work?</h2>
+        <p>Any changes attempted via Javascript are detected by MutationObserver.</p>
+        <p>Guarded DOM nodes are checked via a "hearbeat" that checks the values are what they should be.</p>
+        <pre>
+const guard = new DomGuard({
+  selector: '#protected',
+  heartbeat: 1000 // Check for manipulation every 1 second
+})
+// Initialize DOMGuard on the #protected selector
+guard.init()
+        </pre>
+        <p>View the source code of this page for the entire script.</p>
       </div>
 
       <div class='content-right'>
         <p>Here is a quick video on how the scammers operate.</p>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/J4mkZU2Y0as" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <p>Please share this with people you think might be vulnerable to such a scam ❤️</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/J4mkZU2Y0as" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <p><strong>Please share this with people you think might be vulnerable to such a scam ❤️</strong></p>
       </div>
 
     </div>
 
     <script>
       /***********************
-       * Usage examples 
-       *********************/ 
-      class DomGuard {
-        constructor(opts = {}) {
-          const originalElement = document.querySelector(opts.selector)
-          if (!originalElement) {
-            throw new Error(`Selector "${opts.selector}" not found`)
-          }
-          this.opts = opts
-          this.selector = opts.selector
-          this.initialText = normalizeText(originalElement.innerText)
-          this.originalParent = originalElement.parentNode
-          this.stashedClone = originalElement.cloneNode(true)
-          this.detachListener = () => {}
-        }
-        init() {
-          /* Detect changes to any selector instantly */
-          const detachListener = domGuard({
-            selector: this.selector,
-            initialText: this.initialText,
-            originalParent: this.originalParent,
-            stashedClone: this.stashedClone,
-          })
-          /* Heartbeat to listen for changes via dev tools */              
-          const heartbeat = setInterval(function () {
-            restoreDom({
-              selector: this.selector,
-              initialText: this.initialText,
-              stashedClone: this.stashedClone,
-              originalParent: this.originalParent,
-            })
-          }.bind(this), this.opts.heartbeat || 500)
-          
-          this.detachListener = () => {
-            clearInterval(heartbeat)
-            detachListener()
-          }
-          /* Detach listener */
-          return this.detachListener
-        }
-        disable() {
-          this.detachListener()
-        }
-      }
-
-      function domGuard(apiOpts) {
-        const { selector, initialText, originalParent, stashedClone, debug } = apiOpts
-        /* attach observer to parent element */
-        let detachListener = observeDOM(originalParent, function(m) {
-          var addedNodes = [], removedNodes = [];
-          m.forEach(record => record.addedNodes.length & addedNodes.push(...record.addedNodes))
-          m.forEach(record => record.removedNodes.length & removedNodes.push(...record.removedNodes))
-          if (debug) {
-            console.log('Added:', addedNodes)
-            console.log('Removed:', removedNodes)
-          }
-          if (addedNodes.length || removedNodes.length) {
-            console.log('Immediately Restore DOM nodes')
-            /* Disable listener to avoid infinite loop */
-            detachListener()
-            /* Immediately restore DOM */
-            restoreDom({ selector, initialText, stashedClone, originalParent })
-            /* Reattach observeDOM Javascript listener */
-            detachListener = domGuard(apiOpts)
-          }
-        })
-        return detachListener
-      }
-
-      function normalizeText(str) {
-        return str
-          .split('\n')
-          .map((x) => x.trim())
-          .filter((x) => Boolean(x))
-          .join('\n')
-      }
-
-      function restoreDom({ selector, initialText, originalParent, stashedClone, debug }) {
-        currentElement = document.querySelector(selector)
-        if (!currentElement) return
-
-        if (debug) {
-          console.log(`───────${selector}───────────`)
-          console.log('currentElement', currentElement)
-          console.log('stashedClone', stashedClone)
-        }
-  
-        // const originalText = originalElement.innerText
-        const currentElementText = normalizeText(currentElement.innerText)
-        const stashedCloneText = normalizeText(stashedClone.innerText)
-        console.log(`initialText:    "${initialText}"`)
-        console.log(`currentText:    "${currentElementText}`)
-        console.log(`persistedText:  "${stashedCloneText}"`)
-
-        if (currentElementText !== initialText) {
-
-          if (stashedCloneText === initialText) {
-            if (debug) {
-              console.log('DOM has changed! Reset it!')
-            }
-            const dirtyNode = stashedClone.cloneNode(true)
-            /* Replace altered DOM with cloned original */
-            originalParent.replaceChild(dirtyNode, currentElement)
-          }
-        }
-      }
-
-      function observeDOM(element, callback) {
-        if (!element || element.nodeType !== 1) return
-        if (typeof window === 'undefined') return
-      
-        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver
-        if (MutationObserver) {
-          // define a new observer
-          var mutationObserver = new MutationObserver(callback)
-          // have the observer observe foo for changes in children
-          mutationObserver.observe(element, { childList: true, subtree: true })
-          // Cleanup
-          return () => {
-            console.log('Remove observer')
-            mutationObserver.disconnect()
-          }
-        } else if (window.addEventListener) {
-          // browser support fallback
-          element.addEventListener('DOMNodeInserted', callback, false)
-          element.addEventListener('DOMNodeRemoved', callback, false)
-          // Cleanup
-          return () => {
-            console.log('Remove listeners')
-            element.removeEventListener('DOMNodeInserted', callback)
-            element.removeEventListener('DOMNodeRemoved', callback)
-          }
-        }
-      }
-
-      /***********************
        * Usage examples
        *********************/ 
-
-      const guard = new DomGuard({
+      const guard = new DOMGuard({
         selector: '#protected',
-        heartbeat: 1000
+        // Check for manipulation every .5 second
+        heartbeat: 500
       })
       // Initialize dom guard on this node
       guard.init()
 
-      const guardTwo = new DomGuard({
-        selector: '#protected-two',
-        heartbeat: 1000
-      })
-      // Initialize dom guard on this node
-      guardTwo.init()
-
-      const guardThree = new DomGuard({
-        selector: '#multi',
+      const guardThree = new DOMGuard({
+        selector: '#large-div',
         heartbeat: 1000
       })
       // Initialize dom guard on this node
