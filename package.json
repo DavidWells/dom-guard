@@ -1,6 +1,6 @@
 {
   "name": "dom-guard",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Protect DOM nodes from tampering",
   "source": "index.js",
   "main": "dist/dom-guard.js",
@@ -8,10 +8,10 @@
   "module": "dist/dom-guard.module.js",
   "unpkg": "dist/dom-guard.umd.js",
   "files": [
-		"index.js",
+    "index.js",
     "README.md",
-		"dist"
-	],
+    "dist"
+  ],
   "scripts": {
     "build": "microbundle --name DOMGuard",
     "dev": "microbundle watch",
@@ -25,7 +25,10 @@
     "type": "git",
     "url": "https://github.com/DavidWells/dom-guard"
   },
-  "keywords": ["dom", "security"],
+  "keywords": [
+    "dom",
+    "security"
+  ],
   "author": "DavidWells",
   "license": "MIT",
   "devDependencies": {
