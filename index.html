@@ -6,8 +6,7 @@
     <title>DOM Guard</title>
     <meta name="description" content="DOMGuard - Stop scammers from the manipulating DOM">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="application/javascript" src="./dist/domguard.umd.js"></script>
-
+    <script type="application/javascript" src="./dist/dom-guard.umd.js"></script>
     <style>
       body {
         margin: 32px 48px;
@@ -105,7 +104,7 @@
         <p>Any changes attempted via Javascript are detected by MutationObserver.</p>
         <p>Guarded DOM nodes are checked via a "hearbeat" that checks the values are what they should be.</p>
         <pre>
-const guard = new DomGuard({
+const guard = new DOMGuard({
   selector: '#protected',
   heartbeat: 1000 // Check for manipulation every 1 second
 })

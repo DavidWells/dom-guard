@@ -1,12 +1,12 @@
 {
-  "name": "domguard",
-  "version": "1.0.0",
+  "name": "dom-guard",
+  "version": "0.0.1",
   "description": "Protect DOM nodes from tampering",
   "source": "index.js",
-  "main": "dist/domguard.js",
-  "exports": "./dist/domguard.modern.js",
-  "module": "dist/domguard.module.js",
-  "unpkg": "dist/domguard.umd.js",
+  "main": "dist/dom-guard.js",
+  "exports": "./dist/dom-guard.modern.js",
+  "module": "dist/dom-guard.module.js",
+  "unpkg": "dist/dom-guard.umd.js",
   "scripts": {
     "build": "microbundle --name DOMGuard",
     "dev": "microbundle watch",
