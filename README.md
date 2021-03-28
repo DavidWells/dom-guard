@@ -1,6 +1,6 @@
 # DOM Guard
 
-Stop scammers from the manipluating DOM.
+Stop scammers from the manipulating DOM. [See demo](https://dom-guard.netlify.app)
 
 ## About
 
