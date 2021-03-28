@@ -7,10 +7,18 @@
   "exports": "./dist/dom-guard.modern.js",
   "module": "dist/dom-guard.module.js",
   "unpkg": "dist/dom-guard.umd.js",
+  "files": [
+		"index.js",
+    "README.md",
+		"dist"
+	],
   "scripts": {
     "build": "microbundle --name DOMGuard",
     "dev": "microbundle watch",
-    "serve": "serve ."
+    "serve": "serve .",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
   },
   "keywords": [],
   "author": "DavidWells",
