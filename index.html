@@ -145,20 +145,26 @@
     </div>
 
     <script>
-      /* Usage examples */ 
-      const guard = new DOMGuard({
-        selector: '#protected',
-        heartbeat: 500 // Check for manipulation every .5 second
-      })
-      // Initialize
-      guard.init()
 
-      const guardThree = new DOMGuard({
-        selector: '#large-div',
-        heartbeat: 1000
-      })
-      // Initialize
-      guardThree.init();
+      function protectTheDom() {
+        /* Usage examples */ 
+        const guard = new DOMGuard({
+          selector: '#protected',
+          heartbeat: 500 // Check for manipulation every .5 second
+        })
+        // Initialize
+        guard.init()
+
+        const guardThree = new DOMGuard({
+          selector: '#large-div',
+          heartbeat: 1000
+        })
+        // Initialize
+        guardThree.init();
+      }
+      
+      protectTheDom();
+
     </script>
   </body>
 </html>
