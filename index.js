@@ -53,8 +53,8 @@ function domGuard(apiOpts) {
   /* attach observer to parent element */
   let detachListener = observeDOM(originalParent, function(m) {
     var addedNodes = [], removedNodes = [];
-    m.forEach(record => record.addedNodes.length & addedNodes.push(...record.addedNodes))
-    m.forEach(record => record.removedNodes.length & removedNodes.push(...record.removedNodes))
+    m.forEach(record => record.addedNodes.length && addedNodes.push(...record.addedNodes))
+    m.forEach(record => record.removedNodes.length && removedNodes.push(...record.removedNodes))
     if (debug) {
       console.log('addedNodes:', addedNodes)
       console.log('removedNodes:', removedNodes)
@@ -81,7 +81,7 @@ function normalizeText(str) {
 
 function restoreDom({ selector, initialText, originalParent, stashedClone, debug }) {
   if (inServer) return
-  currentElement = document.querySelector(selector)
+  const currentElement = document.querySelector(selector)
   if (!currentElement) return
 
   if (debug) {
