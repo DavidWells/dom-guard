@@ -52,7 +52,8 @@ jobs:
           github.event.pull_request.head.repo.full_name == github.repository ||
           contains(fromJSON('["COLLABORATOR", "MEMBER", "OWNER"]'), github.event.pull_request.author_association)
         ) &&
-        contains(github.event.pull_request.body, '@claude')
+        contains(github.event.pull_request.body, '@claude') &&
+        !contains(github.event.pull_request.body, 'claude-dispatch-artifact')
       ) ||
       (
         github.event_name == 'issue_comment' &&
@@ -672,6 +673,8 @@ jobs:
         if: steps.claude.outcome == 'success' && steps.dispatch-branch.outputs.branch-name
         env:
           GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN || github.token }}
+          TRIGGER_TEXT: ${{ needs.setup.outputs.trigger-text }}
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         run: |
           BRANCH_NAME="${{ steps.dispatch-branch.outputs.branch-name }}"
           DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
@@ -691,12 +694,38 @@ jobs:
 
           git push origin "$BRANCH_NAME"
 
+          # Claude's final message from the execution log becomes the PR summary
+          CLAUDE_SUMMARY=""
+          if [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ]; then
+            CLAUDE_SUMMARY=$(jq -r '[.[] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text] | last // empty' "$EXECUTION_FILE" 2>/dev/null | head -c 4000 || true)
+          fi
+
+          # "@claude" in a PR body would re-trigger this workflow — refer to
+          # the bot without the @ and stamp the artifact marker
+          BODY_FILE=$(mktemp)
+          {
+            if [ -n "$CLAUDE_SUMMARY" ]; then
+              printf '%s\n\n' "$CLAUDE_SUMMARY" | sed 's/@claude/Claude/g'
+            fi
+            echo "<details><summary>Original instruction</summary>"
+            echo ""
+            echo '```text'
+            printf '%s\n' "$TRIGGER_TEXT" | sed -e 's/@claude/Claude/g' -e 's/```/~~~/g'
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "🤖 Created by Claude from a \`workflow_dispatch\` run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "<!-- claude-dispatch-artifact -->"
+          } > "$BODY_FILE"
+
           PR_TITLE=$(git log -1 --pretty=%s)
           PR_URL=$(gh pr create \
             --base "$DEFAULT_BRANCH" \
             --head "$BRANCH_NAME" \
             --title "$PR_TITLE" \
-            --body "🤖 Created by Claude from a \`workflow_dispatch\` run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}")
+            --body-file "$BODY_FILE")
           echo "🔀 Opened PR: $PR_URL"
           echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT
 
