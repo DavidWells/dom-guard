@@ -33,7 +33,7 @@
   "author": "DavidWells",
   "license": "MIT",
   "devDependencies": {
-    "microbundle": "^0.13.0",
-    "serve": "^11.3.2"
+    "microbundle": "^0.15.1",
+    "serve": "^14.2.6"
   }
 }
